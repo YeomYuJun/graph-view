@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Graph View</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" />
+  <link rel="stylesheet" href="/src/theme.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- ─── Header ─── -->
+    <header class="header">
+      <div class="header__left">
+        <span class="header__brand">GRAPH</span>
+        <span class="header__title" id="title">Memory Graph</span>
+      </div>
+      <div class="header__right">
+        <div class="meta-stats">
+          <span class="meta" id="meta"><b>—</b> nodes · <b>—</b> relations</span>
+        </div>
+        <button class="icon-btn" id="reload-btn" title="Reload from disk">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15.5-6.3L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.5 6.3L3 16"/><path d="M3 21v-5h5"/></svg>
+        </button>
+        <button class="icon-btn" id="settings-btn" title="Settings">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+        <button class="icon-btn" id="fullscreen-btn" title="Toggle fullscreen" hidden>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V5a2 2 0 0 1 2-2h4"/><path d="M21 9V5a2 2 0 0 0-2-2h-4"/><path d="M3 15v4a2 2 0 0 0 2 2h4"/><path d="M21 15v4a2 2 0 0 1-2 2h-4"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- ─── Toolbar ─── -->
+    <section class="toolbar">
+      <div class="search">
+        <svg class="search__icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="text" class="filter" id="filter" placeholder="이름, 관찰 검색…" autocomplete="off" spellcheck="false" />
+      </div>
+
+      <div class="toolbar__right">
+        <div class="zoom-group">
+          <button class="btn btn--sm" data-zoom="0.5">0.5×</button>
+          <button class="btn btn--sm" data-zoom="1">1×</button>
+          <button class="btn btn--sm" data-zoom="2">2×</button>
+        </div>
+        <label class="toolbar__label">
+          <span class="toolbar__label-text">type</span>
+          <select id="type-filter">
+            <option value="">all</option>
+          </select>
+        </label>
+        <label class="toolbar__label">
+          <span class="toolbar__label-text">layout</span>
+          <select id="layout-select">
+            <option value="fcose" selected>fcose</option>
+            <option value="concentric">concentric</option>
+            <option value="grid">grid</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="toolbar__actions">
+        <button class="btn btn--warn" id="cleanup-btn" title="Find orphan nodes">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.7 18.4-9-15.6a1.7 1.7 0 0 0-3 0l-9 15.6A1.7 1.7 0 0 0 2.3 21h18a1.7 1.7 0 0 0 1.5-2.6Z"/><path d="M12 9v4"/><path d="M12 17h0"/></svg>
+          orphans
+        </button>
+        <button class="btn" id="add-node-btn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>
+          node
+        </button>
+        <button class="btn btn--primary" id="add-rel-btn" title="Connect two nodes (or Shift+drag on canvas)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="5" r="2.2"/><circle cx="19" cy="19" r="2.2"/><path d="M7 7l10 10"/></svg>
+          relation
+        </button>
+      </div>
+    </section>
+
+    <!-- ─── Main ─── -->
+    <main class="main">
+      <div class="canvas-wrap">
+        <div id="cy"></div>
+
+        <!-- Legend (entity types, bottom-left) -->
+        <div class="legend" id="legend">
+          <div class="legend__title">Entity types</div>
+          <div class="legend__rows" id="legend-rows"></div>
+        </div>
+
+        <!-- Zoom HUD (bottom-right) -->
+        <div class="zoom-hud">
+          <button id="zoom-out" title="Zoom out">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg>
+          </button>
+          <div class="zoom-level" id="zoom-level">100%</div>
+          <button id="zoom-in" title="Zoom in">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+          <div class="zoom-hud__sep"></div>
+          <button id="zoom-fit" title="Fit to view">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8V5a2 2 0 0 1 2-2h3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M21 16v3a2 2 0 0 1-2 2h-3"/></svg>
+          </button>
+        </div>
+
+        <div class="empty" id="empty" hidden>
+          그래프 비어있음 — show_memory_graph 호출 또는 [+ node] 로 첫 노드를 추가하세요.
+        </div>
+      </div>
+
+      <div class="resizer" id="resizer" role="separator" aria-orientation="vertical" title="드래그로 너비 조절 · 더블클릭으로 360px 복원"></div>
+
+      <aside class="side-panel" id="side-panel">
+        <div class="side-panel__empty" id="panel-empty">
+          <div class="empty-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="7" r="2.5"/><circle cx="17" cy="7" r="2.5"/><circle cx="12" cy="17" r="2.5"/><path d="m9 8 4 7M15 8l-3 7"/></svg>
+          </div>
+          <div class="empty-text">
+            <div class="empty-title">노드 또는 엣지를 선택하세요</div>
+            <div class="empty-sub">그래프 위 항목을 클릭해 상세를 확인하세요.</div>
+          </div>
+        </div>
+        <div class="side-panel__body" id="panel-body" hidden></div>
+      </aside>
+    </main>
+
+    <!-- ─── Footer ─── -->
+    <footer class="footer">
+      <span class="footer-pill"><span class="footer-pill__dot"></span>connected</span>
+      <span class="footer__field">backend: <code id="backend">—</code></span>
+      <span class="footer__sep"></span>
+      <span class="footer__field">version: <code id="version">—</code></span>
+      <span class="toast" id="toast"></span>
+    </footer>
+  </div>
+
+  <!-- Generic modal mount -->
+  <div class="modal" id="modal" hidden>
+    <div class="modal__panel" id="modal-panel"></div>
+  </div>
+
+  <script type="module" src="/src/mcp-app.ts"></script>
+</body>
+</html>
