@@ -2,6 +2,9 @@
   "name": "graph-view",
   "version": "0.1.0",
   "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "build": "vite build",
     "build:watch": "vite build --watch",
@@ -17,7 +20,7 @@
     "cytoscape-edgehandles": "^4.0.1",
     "cytoscape-fcose": "^2.2.0",
     "express": "^4.19.0",
-    "zod": "^3.22.0"
+    "zod": "^3.25.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
